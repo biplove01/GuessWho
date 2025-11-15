@@ -190,8 +190,7 @@
 
     .grid {
       display: grid;
-      /* Default: 4+ columns */
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 15px;
       max-width: 1200px;
       margin: 0 auto;
@@ -244,9 +243,9 @@
       width: 100px;
       height: 100px;
       border-radius: 50%;
+      padding: 4px;
       object-fit: cover;
       margin-bottom: 10px;
-      border: 3px solid #667eea;
     }
 
     .card-name {
@@ -355,10 +354,10 @@
     }
 
     /* SPECIFIC BREAKPOINT: Ensures exactly 3 columns when VW is 500px or less */
-    @media (max-width: 500px) {
+    @media (max-width: 1500px) {
       .grid {
         /* Forces 3 columns by using an appropriate min-width (e.g., 80px allows 3 columns in a 300px-500px range) */
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       }
     }
   </style>
@@ -429,7 +428,30 @@
   </div>
 
   <script>
-    let characters = [];
+    let characters = [{ "name": "Technical Guruji", "imgUrl": "https://images.hindustantimes.com/img/2022/08/17/1600x900/Gaurav-Chaudhary-Technical-Guruji_1660736574751_1660736583960_1660736583960.webp" },
+    { "name": "Ajay Devgan", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5A-2DVFWigJR8IDKycpwKnfn2KYBe_hdMtA&s" },
+    { "name": "Akshay Kumar", "imgUrl": "https://m.media-amazon.com/images/M/MV5BODI4NDY1NzkyM15BMl5BanBnXkFtZTgwNzM3MDM0OTE@._V1_FMjpg_UX1000_.jpg" },
+    { "name": "Ariana Grande", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-JWORh4PEyFSaMzK54VrfeeFC7AcYqoBXow&s" },
+    { "name": "Justin Bieber", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Gna2RLIXPy4ZsyXgOO-DFQM-E9Lq6CArew&s" },
+    { "name": "Pokimane", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQztRBqyghC6WTMlupGvJ50KYQqj7RatY0avQ&s" },
+    { "name": "Valkyrae", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8VVLAojo7oPiAnASctdW8SSUwKZO4RN95sK4O5TwyEg8MIcMRRjCzy8XyWpsQLs8WZ6s&usqp=CAU" },
+    { "name": "Mark rober", "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9F9GyW0kLeFDwQFFzh959YYJ8CtsgwR_zs1bP-o21laJTSkatTDXAM08Qwa2UqI5q1DG2x3jU7iZER4cgSdLpnsrd4Gz7_frm-Zb85w&s=10" },
+    {
+      "name": "Niko Omilana",
+      "imgUrl": "https://speakout.uk/wp-content/uploads/2025/10/NIko-Omilana.webp"
+    },
+    {
+      "name": "mrwhosetheboss",
+      "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP-YX0cpsdBmpjz4Sd1v2vEveO6NbZtfmCp420V4_X2y0fonbFU1BqO9rf&s=10"
+    },
+    {
+      "name": "Sisan Banya",
+      "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Sisan_Baniya.jpg/2049px-Sisan_Baniya.jpg"
+    },
+    {
+      "name": "Gautami",
+      "imgUrl": "https://i.pinimg.com/736x/d1/78/ee/d178ee90591039f7613e7cd7a06885ea.jpg"
+    },];
     let secretPersonIndex = -1;
 
     function handleJsonUpload(event) {
