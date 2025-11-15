@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess Who Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      gap: 15px;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .secret-display {
+      background: gold;
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .secret-display img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #333;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hamburger {
+      cursor: pointer;
+      width: 35px;
+      height: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 4px;
+      background: #fff;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: translateY(13px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: translateY(-13px) rotate(-45deg);
+    }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 350px;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 80px 30px 30px;
+      transition: 0.3s;
+      z-index: 1000;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+    }
+
+    .menu.active {
+      right: 0;
+    }
+
+    .menu-item {
+      margin-bottom: 25px;
+    }
+
+    .menu-item label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .menu-item button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .menu-item button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-label {
+      display: block;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 16px;
+    }
+
+    .file-label:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .json-info {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 10px;
+      color: #333;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .json-info code {
+      display: block;
+      background: #333;
+      color: #4CAF50;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      overflow-x: auto;
+      white-space: pre;
+      font-size: 11px;
+    }
+
+    .secret-person {
+      background: #4CAF50 !important;
+    }
+
+    .reset-btn {
+      background: #f44336 !important;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      perspective: 1000px;
+      height: 200px;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-front {
+      background: white;
+    }
+
+    .card-back {
+      background: #333;
+      transform: rotateY(180deg);
+    }
+
+    .card-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border: 3px solid #667eea;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+
+    .card-placeholder {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 40px;
+      color: #ccc;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      color: #333;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+
+    .secret-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: gold;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 10;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .form-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-cancel {
+      background: #f44336;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+      }
+
+      .card {
+        height: 180px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-left">
+      <h1>🎮 Guess Who?</h1>
+      <div id="secretPersonDisplay" style="display: none;" class="secret-display">
+        <img id="secretPersonImg" src="" alt="Secret Person">
+        <span>🎯 Secret: <span id="secretPersonName"></span></span>
+      </div>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="menu">
+    <div class="menu-item">
+      <label>📁 Upload JSON File:</label>
+      <input type="file" id="jsonFile" class="file-input" accept=".json" onchange="handleJsonUpload(event)">
+      <label for="jsonFile" class="file-label">Choose JSON File</label>
+      <div class="json-info">
+        <strong>Expected format:</strong>
+        <code>[
+  {
+    "name": "Person 1",
+    "imgUrl": "https://..."
+  },
+  {
+    "name": "Person 2",
+    "imgUrl": "https://..."
+  }
+]</code>
+      </div>
+    </div>
+    <div class="menu-item">
+      <button class="secret-person" onclick="selectSecretPerson()" id="secretPersonBtn">🎯 Choose Secret Person</button>
+    </div>
+    <div class="menu-item">
+      <button onclick="flipAllCards()">🔄 Flip All Cards</button>
+    </div>
+    <div class="menu-item">
+      <button class="reset-btn" onclick="resetGame()">🔄 Reset Game</button>
+    </div>
+  </div>
+
+  <div class="grid" id="cardGrid"></div>
+
+  <div id="emptyMessage"
+    style="text-align: center; padding: 50px; font-size: 24px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+    📁 Upload a JSON file with name and imgUrl from the hamburger menu
+  </div>
+
+  <div class="modal" id="secretModal">
+    <div class="modal-content">
+      <h2>Select Secret Person</h2>
+      <p>Click on a character below to set them as the secret person to guess!</p>
+      <div class="grid" id="secretGrid" style="margin-top: 20px; max-height: 400px; overflow-y: auto;"></div>
+      <div class="form-buttons">
+        <button class="btn-cancel" onclick="closeSecretModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let characters = [];
+    let secretPersonIndex = -1;
+
+    function handleJsonUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const jsonData = JSON.parse(e.target.result);
+            if (Array.isArray(jsonData)) {
+              characters = jsonData;
+              secretPersonIndex = -1;
+              renderCards();
+              toggleMenu();
+              alert(`Successfully loaded ${characters.length} characters!`);
+            } else {
+              alert('Invalid JSON format. Please provide an array of objects.');
+            }
+          } catch (error) {
+            alert('Error parsing JSON file. Please check the format.');
+            console.error(error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function toggleMenu() {
+      document.querySelector('.hamburger').classList.toggle('active');
+      document.querySelector('.menu').classList.toggle('active');
+    }
+
+    function createCard(index) {
+      const char = characters[index];
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const isSecret = index === secretPersonIndex;
+
+      card.innerHTML = `
+                <div class="card-inner" data-index="${index}">
+                    <div class="card-front">
+                        ${char.imgUrl ?
+          `<img src="${char.imgUrl}" class="card-image" alt="${char.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="card-placeholder" style="display: none;">👤</div>` :
+          '<div class="card-placeholder">👤</div>'
+        }
+                        <div class="card-name">${char.name || 'Unknown'}</div>
+                    </div>
+                    <div class="card-back">
+                        <div style="font-size: 60px;">❌</div>
+                    </div>
+                </div>
+            `;
+
+      card.querySelector('.card-inner').addEventListener('click', function (e) {
+        e.stopPropagation();
+        this.classList.toggle('flipped');
+      });
+
+      return card;
+    }
+
+    function renderCards() {
+      const grid = document.getElementById('cardGrid');
+      const emptyMessage = document.getElementById('emptyMessage');
+
+      grid.innerHTML = '';
+
+      if (characters.length === 0) {
+        // Show empty message when no characters
+        emptyMessage.style.display = 'block';
+        grid.style.display = 'none';
+      } else {
+        // Hide empty message and show cards
+        emptyMessage.style.display = 'none';
+        grid.style.display = 'grid';
+
+        characters.forEach((char, index) => {
+          grid.appendChild(createCard(index));
+        });
+      }
+
+      // Update secret person display
+      updateSecretPersonDisplay();
+    }
+
+    function updateSecretPersonDisplay() {
+      const display = document.getElementById('secretPersonDisplay');
+      const nameSpan = document.getElementById('secretPersonName');
+      const imgElement = document.getElementById('secretPersonImg');
+      const secretBtn = document.getElementById('secretPersonBtn');
+
+      if (secretPersonIndex >= 0 && characters[secretPersonIndex]) {
+        const secretChar = characters[secretPersonIndex];
+        display.style.display = 'flex';
+        nameSpan.textContent = secretChar.name;
+
+        // Always show the image element, handle errors gracefully
+        if (secretChar.imgUrl) {
+          imgElement.src = secretChar.imgUrl;
+          imgElement.style.display = 'block';
+          imgElement.onerror = function () {
+            // If image fails to load, hide it
+            this.style.display = 'none';
+          };
+        } else {
+          // No image URL, hide the image
+          imgElement.style.display = 'none';
+        }
+
+        // Disable the button when secret is set
+        secretBtn.disabled = true;
+        secretBtn.style.opacity = '0.5';
+        secretBtn.style.cursor = 'not-allowed';
+      } else {
+        display.style.display = 'none';
+        secretBtn.disabled = false;
+        secretBtn.style.opacity = '1';
+        secretBtn.style.cursor = 'pointer';
+      }
+    }
+
+    function flipAllCards() {
+      const cards = document.querySelectorAll('.card-inner');
+      cards.forEach(card => card.classList.remove('flipped'));
+      toggleMenu();
+    }
+
+    function selectSecretPerson() {
+      // Prevent opening modal if secret person is already set
+      const secretBtn = document.getElementById('secretPersonBtn');
+      if (secretBtn.disabled || secretPersonIndex >= 0) {
+        alert('Secret person already set! Reset the game to choose a new one.');
+        return;
+      }
+
+      const secretGrid = document.getElementById('secretGrid');
+      secretGrid.innerHTML = '';
+
+      characters.forEach((char, index) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'cursor: pointer; padding: 15px; background: #f0f0f0; border-radius: 10px; text-align: center; transition: 0.3s;';
+        card.innerHTML = `
+                    ${char.imgUrl ? `<img src="${char.imgUrl}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;" onerror="this.style.display='none'">` : '<div style="font-size: 40px;">👤</div>'}
+                    <div style="font-weight: bold; color: #333;">${char.name}</div>
+                `;
+        card.onmouseover = () => card.style.background = '#667eea';
+        card.onmouseout = () => card.style.background = '#f0f0f0';
+        card.onclick = () => {
+          secretPersonIndex = index;
+          closeSecretModal();
+          renderCards();
+        };
+        secretGrid.appendChild(card);
+      });
+
+      document.getElementById('secretModal').classList.add('active');
+      toggleMenu();
+    }
+
+    function closeSecretModal() {
+      document.getElementById('secretModal').classList.remove('active');
+    }
+
+    function resetGame() {
+      if (confirm('Are you sure you want to reset the game? This will flip all cards back and clear the secret person.')) {
+        secretPersonIndex = -1;
+        const cards = document.querySelectorAll('.card-inner');
+        cards.forEach(card => card.classList.remove('flipped'));
+        renderCards();
+      }
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function (event) {
+      const menu = document.querySelector('.menu');
+      const hamburger = document.querySelector('.hamburger');
+
+      if (menu.classList.contains('active') &&
+        !menu.contains(event.target) &&
+        !hamburger.contains(event.target)) {
+        toggleMenu();
+      }
+    });
+
+    // Initial render
+    renderCards();
+  </script>
+</body>
+
+</html>
