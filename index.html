@@ -190,6 +190,7 @@
 
     .grid {
       display: grid;
+      /* Default: 4+ columns */
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
       max-width: 1200px;
@@ -199,6 +200,7 @@
     .card {
       perspective: 1000px;
       height: 200px;
+      padding: 3px;
     }
 
     .card-inner {
@@ -334,26 +336,28 @@
       color: white;
     }
 
+    /* Change general mobile styles to be less aggressive */
     @media (max-width: 768px) {
       h1 {
         font-size: 1.8em;
       }
 
       .grid {
-        /* Adjusted for general mobile views */
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        /* Set min width to 110px. This results in 4 columns down to about 460px on a 768px wide viewport */
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
         gap: 10px;
       }
 
       .card {
         height: 180px;
+        padding: 3px;
       }
     }
 
-    /* SPECIFIC MOBILE BREAKPOINT */
-    @media (max-width: 484px) {
+    /* SPECIFIC BREAKPOINT: Ensures exactly 3 columns when VW is 500px or less */
+    @media (max-width: 500px) {
       .grid {
-        /* Ensures 3 columns fit when VW is small */
+        /* Forces 3 columns by using an appropriate min-width (e.g., 80px allows 3 columns in a 300px-500px range) */
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       }
     }
